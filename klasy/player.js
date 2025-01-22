@@ -269,7 +269,6 @@ class Player {
             if (Date.now() - slime.lastAttackTime > 1000)
             {
                 this.health -= slime.attack; 
-                console.log(this.health);
                 slime.lastAttackTime = Date.now();
             }
             
@@ -393,14 +392,16 @@ class Player {
 
                 if (this.velocity.x > 0)
                 {
-                    this.isCollidingLeft = true;
+                    key.d = false;
+                    this.isCollidingRight = true;
                     this.velocity.x = 0;
                     break;
                 }
 
                 if (this.velocity.x < 0)
                 {
-                    this.isCollidingRight = true;
+                    key.a = false
+                    this.isCollidingLeft = true;
                     this.velocity.x = 0;
                     break;
                 }
@@ -494,7 +495,7 @@ class Player {
     {
         
         if (this.camerabox.translate.y <= -1058) return;
-        if (this.camerabox.position.y + this.camerabox.width >= canvas.width * 0.75 && this.velocity.y > 0)
+        if (this.camerabox.position.y + this.camerabox.height >= canvas.height / 2 && this.velocity.y > 0)
         {
             this.camerabox.translate.y -= this.velocity.y;
             this.hitbox.position.y -= this.velocity.y;

@@ -1,0 +1,86 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "tlo.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "file.lastUsedOpenFilter": "Wszystkie pliki (*)",
+    "fileStates": {
+        "1.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 0.33,
+            "scaleInEditor": 0.25
+        },
+        "2.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 0.25,
+            "scaleInEditor": 0.25
+        },
+        "3.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 0.75,
+            "scaleInEditor": 0.25
+        },
+        "4.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 0.75,
+            "scaleInEditor": 0.25
+        },
+        "objects 1.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 0.75,
+            "scaleInEditor": 0.25
+        },
+        "objects 2.tsx": {
+            "dynamicWrapping": false
+        },
+        "objects 3.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 0.75
+        },
+        "objects 4.tsx": {
+            "dynamicWrapping": false
+        },
+        "objects2.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tlo.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 5,
+            "viewCenter": {
+                "x": 5934.666666666666,
+                "y": 194
+            }
+        }
+    },
+    "last.exportedFilePath": "C:/Users/MSI/Desktop/Programy/JavaScript/gra/tlo",
+    "last.imagePath": "C:/Users/MSI/Desktop/Programy/JavaScript/gra/tlo/Texture",
+    "map.height": 75,
+    "map.lastUsedExportFilter": "Pliki map JavaScript (*.js)",
+    "map.lastUsedFormat": "tmx",
+    "map.width": 200,
+    "openFiles": [
+        "1.tsx",
+        "tlo.tmx",
+        "objects 1.tsx",
+        "4.tsx",
+        "3.tsx"
+    ],
+    "project": "tlo.tiled-project",
+    "recentFiles": [
+        "1.tsx",
+        "3.tsx",
+        "4.tsx",
+        "objects 1.tsx",
+        "tlo.tmx",
+        "2.tsx",
+        "objects2.tsx"
+    ],
+    "resizeMap.removeObjects": false,
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.type": 0
+}

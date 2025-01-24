@@ -172,7 +172,8 @@ function animate()
     //for (collision of collisionBlocks2d)
     //{
     //    collision.draw();
-    //}   bloki kolizji
+    //}
+    
     slime.update();
     player.update();
 

@@ -125,8 +125,8 @@ class Player {
         //ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
         //ctx.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height);
 
-        ctx.fillStyle = "rgba(0, 0, 255, 0.5)"
-        ctx.fillRect(this.attackbox.position.x, this.attackbox.position.y, this.attackbox.width, this.attackbox.height)
+        //ctx.fillStyle = "rgba(0, 0, 255, 0.5)"
+        //ctx.fillRect(this.attackbox.position.x, this.attackbox.position.y, this.attackbox.width, this.attackbox.height)
     }
 
     drawCharacter()

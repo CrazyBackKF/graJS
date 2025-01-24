@@ -19,9 +19,9 @@ class Enemy
         }
 
         this.speed = {
-            left: -1,
-            right: 1,
-            jump: -3.5,
+            left: -0.3,
+            right: 0.3,
+            jump: -2.5,
             gravity: 0.05,
             sprint: 1.3
         }
@@ -39,11 +39,13 @@ class Enemy
         
         ctx.save();
         ctx.scale(2,2);
-        if(this.health > 0) this.draw();
+        this.draw();
         ctx.restore();
         this.fall();
+        this.move();
         this.checkCollisions2();
         this.checkCollisions();
+        this.jump();
         this.physics();
     }
     
@@ -61,19 +63,29 @@ class Enemy
 
     fall()
     {
-        if (this.hitbox.position.y + this.hitbox.height + this.velocity.y < canvas.height / this.scale.y)
+        this.velocity.y += this.speed.gravity;
+    }
+
+    move()
+    {
+        if (this.hitbox.position.x < player.hitbox.position.x)
         {
-            this.velocity.y += this.speed.gravity;
+            this.velocity.x = this.speed.right;
         }
-        else 
+        else if(this.hitbox.position.x > player.hitbox.position.x)
         {
-            this.velocity.y = 0;
+            this.velocity.x = this.speed.left;
         }
+    }
+
+    jump()
+    {
+        if(this.velocity.x == 0) this.velocity.y = this.speed.jump;
     }
 
     checkCollisions() 
     {
-        
+        this.isColliding = false;
         for (let i = 0; i < this.collisionBlocks2d.length; i++)
         {
             const scaledY = (this.collisionBlocks2d[i].position.y + player.camerabox.translate.y) * 0.75;
@@ -90,12 +102,14 @@ class Enemy
                 if (this.velocity.x > 0)
                 {
                     this.velocity.x = 0;
+                    this.isColliding = true;
                     break;
                 }
 
                 if (this.velocity.x < 0)
                 {
                     this.velocity.x = 0;
+                    this.isColliding = true;
                     break;
                 }
 

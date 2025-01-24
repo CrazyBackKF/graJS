@@ -152,32 +152,55 @@ const player = new Player({
     collisionBlocks2d: collisionBlocks2d
 });
 
-const slime = new Enemy({
-    hitbox: {
-        position: {
-            x: 200,
-            y: 100
-        },
-        width: 20,
-        height: 20,
-    },
-    collisionBlocks2d: collisionBlocks2d
-})
+const slimeArray = [];
+
+//const slime = new Enemy({
+//    hitbox: {
+//        position: {
+//            x: 200,
+//            y: 100
+//        },
+//        width: 20,
+//        height: 20,
+//    },
+//    collisionBlocks2d: collisionBlocks2d
+//})
 
 function animate()
 {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(background.image, 0, 0, 1400, 800)
     map.update();
+
     //for (collision of collisionBlocks2d)
     //{
     //    collision.draw();
     //}
-    
-    slime.update();
-    player.update();
 
+    if(Math.random() < 0.001 && slimeArray.length < 5)
+    {
+        slimeArray.push(new Enemy({
+            hitbox : {
+                position: {
+                    x: canvas.width + 20,
+                    y: player.hitbox.position.y
+                },
+                width: 20,
+                height: 20
+            },
+            collisionBlocks2d
+        }))
+    }
     
+    player.update();
+    for (let i = 0; i < slimeArray.length; i++)
+    {
+        slimeArray[i].update();
+        if(slimeArray[i].health <= 0)
+        {
+            slimeArray.splice(i, 1);
+        }
+    }
 
     requestAnimationFrame(animate);
 }

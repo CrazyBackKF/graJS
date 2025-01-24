@@ -23,7 +23,7 @@ class Player {
         this.hitbox = {
             position: {
                 x: 0,
-                y: 20
+                y: 0
             },
             width: 18,
             height: 34,
@@ -98,6 +98,7 @@ class Player {
         player.jump();
         player.physics();
         player.checkIfHitCanvas();
+        
         player.moveCameraRight();
         player.moveCameraLeft();
         player.moveCameraDown();
@@ -241,36 +242,46 @@ class Player {
     {
         if(this.isAttacking)
         {
-            if (this.attackbox.position.y + this.attackbox.height >= slime.hitbox.position.y &&
-                this.attackbox.position.y <= slime.hitbox.position.y + slime.hitbox.height &&
-                this.attackbox.position.x <= slime.hitbox.position.x + slime.hitbox.width &&
-                this.attackbox.position.x + this.attackbox.width >= slime.hitbox.position.x && 
-                this.isAttacking)
+            for (let i = 0; i < slimeArray.length; i++)
             {
-                if ((this.state = "AttackL" && this.animations.AttackL.currentFrame >= 4) || 
-                (this.state = "AttackR" && this.animations.AttackR.currentFrame >= 4))
-                {   
-                    slime.health -= 20;
-                    this.isAttacking = false;
+                if(slimeArray.length == 0) return;
+                const slime = slimeArray[i];
+                if (this.attackbox.position.y + this.attackbox.height >= slime.hitbox.position.y &&
+                    this.attackbox.position.y <= slime.hitbox.position.y + slime.hitbox.height &&
+                    this.attackbox.position.x <= slime.hitbox.position.x + slime.hitbox.width &&
+                    this.attackbox.position.x + this.attackbox.width >= slime.hitbox.position.x && 
+                    this.isAttacking)
+                {
+                    if ((this.state = "AttackL" && this.animations.AttackL.currentFrame >= 4) || 
+                    (this.state = "AttackR" && this.animations.AttackR.currentFrame >= 4))
+                    {   
+                        slime.health -= 20;
+                        this.isAttacking = false;
+                    }
+                    
                 }
-                
             }
         }
     }
 
     hurt()
     {
-        if (this.hitbox.position.y + this.hitbox.height >= slime.hitbox.position.y &&
-            this.hitbox.position.y <= slime.hitbox.position.y + slime.hitbox.height &&
-            this.hitbox.position.x <= slime.hitbox.position.x + slime.hitbox.width &&
-            this.hitbox.position.x + this.hitbox.width >= slime.hitbox.position.x)
+        for (let i = 0; i < slimeArray.length; i++)
         {
-            if (Date.now() - slime.lastAttackTime > 1000)
+            if(slimeArray.length == 0) return;
+            const slime = slimeArray[i];
+            if (this.hitbox.position.y + this.hitbox.height >= slime.hitbox.position.y &&
+                this.hitbox.position.y <= slime.hitbox.position.y + slime.hitbox.height &&
+                this.hitbox.position.x <= slime.hitbox.position.x + slime.hitbox.width &&
+                this.hitbox.position.x + this.hitbox.width >= slime.hitbox.position.x)
             {
-                this.health -= slime.attack; 
-                slime.lastAttackTime = Date.now();
+                if (Date.now() - slime.lastAttackTime > 1000)
+                {
+                    this.health -= slime.attack; 
+                    slime.lastAttackTime = Date.now();
+                }
+                
             }
-            
         }
     }
 
@@ -430,14 +441,20 @@ class Player {
                 this.camerabox.translate.x -= (this.velocity.x * this.speed.sprint);
                 this.hitbox.position.x -= (this.velocity.x * this.speed.sprint);
                 this.camerabox.position.x -= (this.velocity.x * this.speed.sprint);
-                slime.hitbox.position.x -= (this.velocity.x * this.speed.sprint) * 0.75;
+                for (let i = 0; i < slimeArray.length; i++)
+                {
+                    slimeArray[i].hitbox.position.x -= (this.velocity.x * this.speed.sprint) * 0.75;
+                }
             }
             else 
             {
                 this.camerabox.translate.x -= this.velocity.x;
                 this.hitbox.position.x -= this.velocity.x;
                 this.camerabox.position.x -= this.velocity.x;
-                slime.hitbox.position.x -= this.velocity.x * 0.75;
+                for (let i = 0; i < slimeArray.length; i++)
+                {
+                    slimeArray[i].hitbox.position.x -= this.velocity.x * 0.75;
+                }
             }    
             
         }
@@ -453,14 +470,20 @@ class Player {
                 this.camerabox.translate.x -= (this.velocity.x * this.speed.sprint);
                 this.hitbox.position.x -= (this.velocity.x * this.speed.sprint);
                 this.camerabox.position.x -= (this.velocity.x * this.speed.sprint);
-                slime.hitbox.position.x -= (this.velocity.x * this.speed.sprint) * 0.75;
+                for (let i = 0; i < slimeArray.length; i++)
+                {
+                    slimeArray[i].hitbox.position.x -= (this.velocity.x * this.speed.sprint) * 0.75;
+                }
             }
             else 
             {
                 this.camerabox.translate.x -= this.velocity.x;
                 this.hitbox.position.x -= this.velocity.x;
                 this.camerabox.position.x -= this.velocity.x;
-                slime.hitbox.position.x -= this.velocity.x * 0.75;
+                for (let i = 0; i < slimeArray.length; i++)
+                {
+                    slimeArray[i].hitbox.position.x -= this.velocity.x * 0.75;
+                }
             }    
             
         }
@@ -475,7 +498,10 @@ class Player {
             this.camerabox.translate.y -= this.velocity.y;
             this.hitbox.position.y -= this.velocity.y;
             this.camerabox.position.y -= this.velocity.y;
-            slime.hitbox.position.y -= this.velocity.y * 0.75;
+            for (let i = 0; i < slimeArray.length; i++)
+            {
+                slimeArray[i].hitbox.position.y -= this.velocity.y * 0.75;
+            }
         }
     }
 
@@ -488,7 +514,10 @@ class Player {
             this.camerabox.translate.y -= this.velocity.y;
             this.hitbox.position.y -= this.velocity.y;
             this.camerabox.position.y -= this.velocity.y;
-            slime.hitbox.position.y -= this.velocity.y * 0.75;
+            for (let i = 0; i < slimeArray.length; i++)
+            {
+                slimeArray[i].hitbox.position.y -= this.velocity.y * 0.75;
+            }
         }
     }
 }

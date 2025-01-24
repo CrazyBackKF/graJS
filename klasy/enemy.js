@@ -1,6 +1,6 @@
 class Enemy
 {
-    constructor({hitbox, collisionBlocks2d})
+    constructor({hitbox, collisionBlocks2d, animations})
     {
         this.hitbox = hitbox;
         this.collisionBlocks2d = collisionBlocks2d;
@@ -9,8 +9,8 @@ class Enemy
         this.lastAttackTime = 0;
 
         this.position = {
-            x: 0,
-            y: 0
+            x: this.hitbox.position.x - 20,
+            y: this.hitbox.position.y - 20
         }
         
         this.velocity = {
@@ -19,27 +19,34 @@ class Enemy
         }
 
         this.speed = {
-            left: -0.3,
-            right: 0.3,
-            jump: -2.5,
+            left: -0.2,
+            right: 0.2,
+            jump: -1.2,
             gravity: 0.05,
             sprint: 1.3
         }
 
         this.scale = {
-            x: 2,
-            y: 2
+            x: 4,
+            y: 4
         }
         this.health = 200;
         this.attack = 20;
+        this.animations = animations;
+        this.state = "Move"
+        this.image = new Image();
+        this.image.src = this.animations[this.state].imageSrc
     }
 
     update()
     {
-        
+        this.position.x = this.hitbox.position.x - 23;
+        this.position.y = this.hitbox.position.y - 37;
         ctx.save();
-        ctx.scale(2,2);
+        ctx.scale(this.scale.x, this.scale.y);
         this.draw();
+        this.drawImage();
+        this.animate();
         ctx.restore();
         this.fall();
         this.move();
@@ -55,6 +62,43 @@ class Enemy
         ctx.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height)
     }
 
+    drawImage()
+    {
+        if(!this.image) return;
+        const currentAnimation = this.animations[this.state];
+        ctx.drawImage
+        (
+            this.image,
+            (this.image.width / currentAnimation.allFrames) * currentAnimation.currentFrame,
+            0,
+            this.image.width / currentAnimation.allFrames,
+            this.image.height,
+            this.position.x,
+            this.position.y,
+            this.image.width / currentAnimation.allFrames,
+            this.image.height
+        )
+    }
+
+    animate()
+    {
+        const currentAnimation = this.animations[this.state];
+        this.image.src = currentAnimation.imageSrc
+        if (currentAnimation.framesCounter % currentAnimation.framesBuffer == 0)    
+        {    
+            if (currentAnimation.currentFrame < currentAnimation.allFrames - 1) this.animations[this.state].currentFrame++;
+            else 
+            {
+                this.animations[this.state].currentFrame = 0;
+                if(!currentAnimation.isRepetitive) 
+                {
+                    this.state = "Move"
+                }
+            }
+        }
+        this.animations[this.state].framesCounter++;
+    }
+
     physics()
     {
         this.hitbox.position.x += this.velocity.x;
@@ -68,18 +112,26 @@ class Enemy
 
     move()
     {
-        if (this.hitbox.position.x < player.hitbox.position.x)
+        if (this.health <= 0) 
+        {
+            this.velocity.x = 0;
+            return;
+        };
+        if (this.hitbox.position.x * this.scale.x < player.hitbox.position.x * scaleCharacter.x)
         {
             this.velocity.x = this.speed.right;
+            //this.state = "Move";
         }
-        else if(this.hitbox.position.x > player.hitbox.position.x)
+        else if(this.hitbox.position.x * this.scale.x > player.hitbox.position.x * scaleCharacter.x)
         {
             this.velocity.x = this.speed.left;
+            //this.state = "Move";
         }
     }
 
     jump()
     {
+        if (this.health <= 0) return;
         if(this.velocity.x == 0) this.velocity.y = this.speed.jump;
     }
 
@@ -88,10 +140,10 @@ class Enemy
         this.isColliding = false;
         for (let i = 0; i < this.collisionBlocks2d.length; i++)
         {
-            const scaledY = (this.collisionBlocks2d[i].position.y + player.camerabox.translate.y) * 0.75;
-            const scaledX = (this.collisionBlocks2d[i].position.x + player.camerabox.translate.x) * 0.75;
-            const scaledWidth = this.collisionBlocks2d[i].width * 0.75;
-            const scaledHeight = this.collisionBlocks2d[i].height * 0.75;
+            const scaledY = (this.collisionBlocks2d[i].position.y + player.camerabox.translate.y) * scale.y / this.scale.y;
+            const scaledX = (this.collisionBlocks2d[i].position.x + player.camerabox.translate.x) * scale.x / this.scale.x;
+            const scaledWidth = this.collisionBlocks2d[i].width * scale.x / this.scale.x;
+            const scaledHeight = this.collisionBlocks2d[i].height * scale.y / this.scale.y;
 
             if (this.hitbox.position.y + this.hitbox.height + this.velocity.y >= scaledY &&
                 this.hitbox.position.y + this.velocity.y <= scaledY + scaledHeight &&
@@ -123,10 +175,10 @@ class Enemy
         this.isColliding = false;
         for (let i = 0; i < this.collisionBlocks2d.length; i++)
             {
-                const scaledY = (this.collisionBlocks2d[i].position.y + player.camerabox.translate.y) * 0.75;
-                const scaledX = (this.collisionBlocks2d[i].position.x + player.camerabox.translate.x) * 0.75;
-                const scaledWidth = this.collisionBlocks2d[i].width * 0.75;
-                const scaledHeight = this.collisionBlocks2d[i].height * 0.75;
+                const scaledY = (this.collisionBlocks2d[i].position.y + player.camerabox.translate.y) * scale.y / this.scale.y;
+                const scaledX = (this.collisionBlocks2d[i].position.x + player.camerabox.translate.x) * scale.x / this.scale.x;
+                const scaledWidth = this.collisionBlocks2d[i].width * scale.x / this.scale.x;
+                const scaledHeight = this.collisionBlocks2d[i].height * scale.y / this.scale.y;
     
                 if (this.hitbox.position.y + this.hitbox.height + this.velocity.y >= scaledY &&
                     this.hitbox.position.y + this.velocity.y <= scaledY + scaledHeight &&

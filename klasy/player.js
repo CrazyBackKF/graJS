@@ -246,16 +246,18 @@ class Player {
             {
                 if(slimeArray.length == 0) return;
                 const slime = slimeArray[i];
-                if (this.attackbox.position.y + this.attackbox.height >= slime.hitbox.position.y &&
-                    this.attackbox.position.y <= slime.hitbox.position.y + slime.hitbox.height &&
-                    this.attackbox.position.x <= slime.hitbox.position.x + slime.hitbox.width &&
-                    this.attackbox.position.x + this.attackbox.width >= slime.hitbox.position.x && 
+                if (this.attackbox.position.y + this.attackbox.height >= slime.hitbox.position.y * slime.scale.y / scaleCharacter.y &&
+                    this.attackbox.position.y <= slime.hitbox.position.y + slime.hitbox.height * slime.scale.y / scaleCharacter.y &&
+                    this.attackbox.position.x <= slime.hitbox.position.x + slime.hitbox.width * slime.scale.x / scaleCharacter.x &&
+                    this.attackbox.position.x + this.attackbox.width >= slime.hitbox.position.x * slime.scale.x / scaleCharacter.x && 
                     this.isAttacking)
                 {
                     if ((this.state = "AttackL" && this.animations.AttackL.currentFrame >= 4) || 
                     (this.state = "AttackR" && this.animations.AttackR.currentFrame >= 4))
                     {   
                         slime.health -= 20;
+                        if(slime.health > 0) slime.state = "Hurt";
+                        console.log(slime.health)
                         this.isAttacking = false;
                     }
                     
@@ -270,10 +272,10 @@ class Player {
         {
             if(slimeArray.length == 0) return;
             const slime = slimeArray[i];
-            if (this.hitbox.position.y + this.hitbox.height >= slime.hitbox.position.y &&
-                this.hitbox.position.y <= slime.hitbox.position.y + slime.hitbox.height &&
-                this.hitbox.position.x <= slime.hitbox.position.x + slime.hitbox.width &&
-                this.hitbox.position.x + this.hitbox.width >= slime.hitbox.position.x)
+            if (this.attackbox.position.y + this.attackbox.height >= slime.hitbox.position.y * slime.scale.y / scaleCharacter.y &&
+                this.attackbox.position.y <= slime.hitbox.position.y + slime.hitbox.height * slime.scale.y / scaleCharacter.y &&
+                this.attackbox.position.x <= slime.hitbox.position.x + slime.hitbox.width * slime.scale.x / scaleCharacter.x &&
+                this.attackbox.position.x + this.attackbox.width >= slime.hitbox.position.x * slime.scale.x / scaleCharacter.x)
             {
                 if (Date.now() - slime.lastAttackTime > 1000)
                 {
@@ -443,7 +445,7 @@ class Player {
                 this.camerabox.position.x -= (this.velocity.x * this.speed.sprint);
                 for (let i = 0; i < slimeArray.length; i++)
                 {
-                    slimeArray[i].hitbox.position.x -= (this.velocity.x * this.speed.sprint) * 0.75;
+                    slimeArray[i].hitbox.position.x -= (this.velocity.x * this.speed.sprint) * scale.x / slimeArray[i].scale.x;
                 }
             }
             else 
@@ -453,7 +455,7 @@ class Player {
                 this.camerabox.position.x -= this.velocity.x;
                 for (let i = 0; i < slimeArray.length; i++)
                 {
-                    slimeArray[i].hitbox.position.x -= this.velocity.x * 0.75;
+                    slimeArray[i].hitbox.position.x -= this.velocity.x * scale.x / slimeArray[i].scale.x;
                 }
             }    
             
@@ -472,7 +474,7 @@ class Player {
                 this.camerabox.position.x -= (this.velocity.x * this.speed.sprint);
                 for (let i = 0; i < slimeArray.length; i++)
                 {
-                    slimeArray[i].hitbox.position.x -= (this.velocity.x * this.speed.sprint) * 0.75;
+                    slimeArray[i].hitbox.position.x -= (this.velocity.x * this.speed.sprint) * scale.x / slimeArray[i].scale.x;
                 }
             }
             else 
@@ -482,7 +484,7 @@ class Player {
                 this.camerabox.position.x -= this.velocity.x;
                 for (let i = 0; i < slimeArray.length; i++)
                 {
-                    slimeArray[i].hitbox.position.x -= this.velocity.x * 0.75;
+                    slimeArray[i].hitbox.position.x -= this.velocity.x * scale.x / slimeArray[i].scale.x;
                 }
             }    
             
@@ -500,7 +502,7 @@ class Player {
             this.camerabox.position.y -= this.velocity.y;
             for (let i = 0; i < slimeArray.length; i++)
             {
-                slimeArray[i].hitbox.position.y -= this.velocity.y * 0.75;
+                slimeArray[i].hitbox.position.y -= this.velocity.y * scale.y / slimeArray[i].scale.y;
             }
         }
     }
@@ -516,7 +518,7 @@ class Player {
             this.camerabox.position.y -= this.velocity.y;
             for (let i = 0; i < slimeArray.length; i++)
             {
-                slimeArray[i].hitbox.position.y -= this.velocity.y * 0.75;
+                slimeArray[i].hitbox.position.y -= this.velocity.y * scale.y / slimeArray[i].scale.y;
             }
         }
     }

@@ -151,20 +151,19 @@ const player = new Player({
     },
     collisionBlocks2d: collisionBlocks2d
 });
-
 const slimeArray = [];
-
-//const slime = new Enemy({
+//const slimeArray = [new Enemy({
 //    hitbox: {
 //        position: {
 //            x: 200,
 //            y: 100
 //        },
-//        width: 20,
-//        height: 20,
+//        width: 16,
+//        height: 11,
 //    },
-//    collisionBlocks2d: collisionBlocks2d
-//})
+//    collisionBlocks2d: collisionBlocks2d,
+//    animations: slimeAnimations[1]
+//})];
 
 function animate()
 {
@@ -179,16 +178,18 @@ function animate()
 
     if(Math.random() < 0.001 && slimeArray.length < 5)
     {
+        const animationsRandom = Math.floor(Math.random() * 4) + 1;
         slimeArray.push(new Enemy({
             hitbox : {
                 position: {
                     x: canvas.width + 20,
                     y: player.hitbox.position.y
                 },
-                width: 20,
-                height: 20
+                width: 16,
+                height: 11
             },
-            collisionBlocks2d
+            collisionBlocks2d,
+            animations: slimeAnimations[animationsRandom]
         }))
     }
     
@@ -198,10 +199,10 @@ function animate()
         slimeArray[i].update();
         if(slimeArray[i].health <= 0)
         {
-            slimeArray.splice(i, 1);
+            slimeArray[i].state = "Death"
+            if (slimeArray[i].animations.Death.currentFrame == slimeArray[i].animations.Death.allFrames - 1) slimeArray.splice(i, 1);
         }
     }
-
     requestAnimationFrame(animate);
 }
 

@@ -175,14 +175,14 @@ function animate()
     //    collision.draw();
     //}
 
-    if(Math.random() < 0.002 && slimeArray.length < 10)
+    if(Math.random() < 0.001 && slimeArray.length < 10)
     {
         const animationsRandom = Math.floor(Math.random() * 4) + 1;
         slimeArray.push(new Enemy({
             hitbox : {
                 position: {
                     x: (canvas.width + 30) / Enemy.scale.x * scaleCharacter.x,
-                    y: player.hitbox.position.y / Enemy.scale.y * scaleCharacter.y
+                    y: 0
                 },
                 width: 16,
                 height: 11

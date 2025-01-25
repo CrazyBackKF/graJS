@@ -225,7 +225,6 @@ class Player {
             {
                 if(slimeArray.length == 0) return;
                 const slime = slimeArray[i];
-                console.log(Date.now() - this.lastAttack)
                 if (this.attackbox.position.y + this.attackbox.height >= slime.hitbox.position.y * slime.scale.y / scaleCharacter.y &&
                     this.attackbox.position.y <= (slime.hitbox.position.y + slime.hitbox.height) * slime.scale.y / scaleCharacter.y &&
                     this.attackbox.position.x <= (slime.hitbox.position.x + slime.hitbox.width) * slime.scale.x / scaleCharacter.x &&
@@ -237,6 +236,11 @@ class Player {
                     {   
                         slime.health -= 20;
                         if(slime.health > 0) slime.state = "Hurt";
+                        if((slime.hitbox.position.x + slime.hitbox.width / 2) * slime.scale.x >= (this.hitbox.position.x + this.hitbox.width / 2) * scaleCharacter.x) var animationAcceleration = 50;
+                        else var animationAcceleration = -50;
+                        gsap.to(slime.hitbox.position, {
+                            x: slime.hitbox.position.x + animationAcceleration,
+                        })
                         this.isAttacking = false;
                         this.lastAttack = Date.now();
                     }
@@ -421,7 +425,7 @@ class Player {
             
                         if (this.velocity.y < 0) 
                         {
-                            this.velocity.y = 0;
+                            this.velocity.y = 1;
                             this.hitbox.position.y = scaledY + scaledHeight + 0.01;
                             break;
                         }

@@ -73,7 +73,6 @@ class Enemy
 
     update()
     {
-        console.log(this.animations)
         this.position.x = this.hitbox.position.x - 23;
         this.position.y = this.hitbox.position.y - 37;
         ctx.save();
@@ -113,7 +112,7 @@ class Enemy
             this.image.height
         )
         ctx.fillStyle = "red";
-        ctx.fillRect(this.hitbox.position.x, this.hitbox.position.y - 10, this.hitbox.width * (this.health / this.fullHealth), 3);
+        if(this.health >= 0) ctx.fillRect(this.hitbox.position.x, this.hitbox.position.y - 10, this.hitbox.width * (this.health / this.fullHealth), 3);
         ctx.strokeStyle = "black";
         ctx.strokeRect(this.hitbox.position.x, this.hitbox.position.y - 10, this.hitbox.width, 3);
     }

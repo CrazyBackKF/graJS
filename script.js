@@ -166,7 +166,6 @@ const slimeArray = [];
 //})];
 function animate()
 {
-    console.log(slimeAnimations)
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(background.image, 0, 0, 1400, 800)
     map.update();

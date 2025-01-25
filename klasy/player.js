@@ -16,6 +16,7 @@ class Player {
         this.isAttacking = false;
         this.isAttackingState = false;
         this.health = 200;
+        this.lastAttack = 0;
         
         this.hitbox = {
             position: {
@@ -224,11 +225,12 @@ class Player {
             {
                 if(slimeArray.length == 0) return;
                 const slime = slimeArray[i];
+                console.log(Date.now() - this.lastAttack)
                 if (this.attackbox.position.y + this.attackbox.height >= slime.hitbox.position.y * slime.scale.y / scaleCharacter.y &&
                     this.attackbox.position.y <= (slime.hitbox.position.y + slime.hitbox.height) * slime.scale.y / scaleCharacter.y &&
                     this.attackbox.position.x <= (slime.hitbox.position.x + slime.hitbox.width) * slime.scale.x / scaleCharacter.x &&
                     this.attackbox.position.x + this.attackbox.width >= slime.hitbox.position.x * slime.scale.x / scaleCharacter.x && 
-                    this.isAttacking)
+                    this.isAttacking && Date.now() - this.lastAttack >= 500)
                 {
                     if ((this.state == "AttackL" && this.animations.AttackL.currentFrame >= 4) || 
                     (this.state == "AttackR" && this.animations.AttackR.currentFrame >= 4))
@@ -236,6 +238,7 @@ class Player {
                         slime.health -= 20;
                         if(slime.health > 0) slime.state = "Hurt";
                         this.isAttacking = false;
+                        this.lastAttack = Date.now();
                     }
                     
                 }

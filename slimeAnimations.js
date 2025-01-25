@@ -7,7 +7,6 @@ const slimeAnimations = {
             framesCounter: 0,
             framesBuffer: 15,
             isRepetitive: true,
-            width: 320
         },
 
         Hurt: {
@@ -17,7 +16,6 @@ const slimeAnimations = {
             framesCounter: 0,
             framesBuffer: 10,
             isRepetitive: false,
-            width: 320
         },
 
         Death: {
@@ -27,7 +25,6 @@ const slimeAnimations = {
             framesCounter: 0,
             framesBuffer: 10,
             isRepetitive: false,
-            width: 640
         },
     },
     
@@ -39,7 +36,6 @@ const slimeAnimations = {
             framesCounter: 0,
             framesBuffer: 15,
             isRepetitive: true,
-            width: 320
         },
 
         Hurt: {
@@ -49,17 +45,15 @@ const slimeAnimations = {
             framesCounter: 0,
             framesBuffer: 10,
             isRepetitive: false,
-            width: 320
         },
 
         Death: {
             imageSrc: 'sprite/ExplosiveSlime/ExplosiveSlime_Death.png',
-            allFrames: 10,
+            allFrames: 13,
             currentFrame: 0,
             framesCounter: 0,
             framesBuffer: 10,
             isRepetitive: false,
-            width: 640
         },
     },
     
@@ -71,7 +65,6 @@ const slimeAnimations = {
             framesCounter: 0,
             framesBuffer: 15,
             isRepetitive: true,
-            width: 320
         },
 
         Hurt: {
@@ -81,7 +74,6 @@ const slimeAnimations = {
             framesCounter: 0,
             framesBuffer: 10,
             isRepetitive: false,
-            width: 320
         },
 
         Death: {
@@ -91,7 +83,6 @@ const slimeAnimations = {
             framesCounter: 0,
             framesBuffer: 10,
             isRepetitive: false,
-            width: 640
         },
     },
     
@@ -103,7 +94,6 @@ const slimeAnimations = {
             framesCounter: 0,
             framesBuffer: 15,
             isRepetitive: true,
-            width: 320
         },
 
         Hurt: {
@@ -113,7 +103,6 @@ const slimeAnimations = {
             framesCounter: 0,
             framesBuffer: 10,
             isRepetitive: false,
-            width: 320
         },
 
         Death: {
@@ -123,7 +112,6 @@ const slimeAnimations = {
             framesCounter: 0,
             framesBuffer: 10,
             isRepetitive: false,
-            width: 640
         },
     }
 }

@@ -1,6 +1,10 @@
 class Enemy
 {
-    constructor({hitbox, collisionBlocks2d, animations})
+    static scale = {
+        x: 4,
+        y: 4
+    }
+    constructor({hitbox, collisionBlocks2d, slimeAnimations})
     {
         this.hitbox = hitbox;
         this.collisionBlocks2d = collisionBlocks2d;
@@ -27,24 +31,54 @@ class Enemy
         }
 
         this.scale = {
-            x: 4,
-            y: 4
+            x: Enemy.scale.x,
+            y: Enemy.scale.y
         }
+        this.fullHealth = 200;
         this.health = 200;
         this.attack = 20;
-        this.animations = animations;
+        this.slimeAnimations = slimeAnimations;
         this.state = "Move"
         this.image = new Image();
-        this.image.src = this.animations[this.state].imageSrc
-    }
+        this.animations = {
+            Move: {
+                imageSrc: this.slimeAnimations.Move.imageSrc,
+                allFrames: this.slimeAnimations.Move.allFrames,
+                currentFrame: this.slimeAnimations.Move.currentFrame,
+                framesCounter: this.slimeAnimations.Move.framesCounter,
+                framesBuffer: this.slimeAnimations.Move.framesBuffer,
+                isRepetitive: this.slimeAnimations.Move.isRepetitive,
+            },
+    
+            Hurt: {
+                imageSrc: this.slimeAnimations.Hurt.imageSrc,
+                allFrames: this.slimeAnimations.Hurt.allFrames,
+                currentFrame: this.slimeAnimations.Hurt.currentFrame,
+                framesCounter: this.slimeAnimations.Hurt.framesCounter,
+                framesBuffer: this.slimeAnimations.Hurt.framesBuffer,
+                isRepetitive: this.slimeAnimations.Hurt.isRepetitive,
+            },
+    
+            Death: {
+                imageSrc: this.slimeAnimations.Death.imageSrc,
+                allFrames: this.slimeAnimations.Death.allFrames,
+                currentFrame: this.slimeAnimations.Death.currentFrame,
+                framesCounter: this.slimeAnimations.Death.framesCounter,
+                framesBuffer: this.slimeAnimations.Death.framesBuffer,
+                isRepetitive: this.slimeAnimations.Death.isRepetitive,
+            }
+        }
+        }
+
 
     update()
     {
+        console.log(this.animations)
         this.position.x = this.hitbox.position.x - 23;
         this.position.y = this.hitbox.position.y - 37;
         ctx.save();
         ctx.scale(this.scale.x, this.scale.y);
-        this.draw();
+        //this.draw();
         this.drawImage();
         this.animate();
         ctx.restore();
@@ -78,6 +112,10 @@ class Enemy
             this.image.width / currentAnimation.allFrames,
             this.image.height
         )
+        ctx.fillStyle = "red";
+        ctx.fillRect(this.hitbox.position.x, this.hitbox.position.y - 10, this.hitbox.width * (this.health / this.fullHealth), 3);
+        ctx.strokeStyle = "black";
+        ctx.strokeRect(this.hitbox.position.x, this.hitbox.position.y - 10, this.hitbox.width, 3);
     }
 
     animate()

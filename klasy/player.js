@@ -14,7 +14,6 @@ class Player {
         this.lastDirection = "right"
         this.isJumping = false;
         this.isAttacking = false;
-        this.canJump = false;
         this.isAttackingState = false;
         this.health = 200;
         
@@ -116,14 +115,14 @@ class Player {
     
     draw()
     {
-        ctx.fillStyle = "rgba(0, 255, 0, 0.5)"
-        ctx.fillRect(this.camerabox.position.x, this.camerabox.position.y, this.camerabox.width, this.camerabox.height)
+        //ctx.fillStyle = "rgba(0, 255, 0, 0.5)"
+        //ctx.fillRect(this.camerabox.position.x, this.camerabox.position.y, this.camerabox.width, this.camerabox.height)
         //
         //ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
         //ctx.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height);
 
-        //ctx.fillStyle = "rgba(0, 0, 255, 0.5)"
-        //ctx.fillRect(this.attackbox.position.x, this.attackbox.position.y, this.attackbox.width, this.attackbox.height)
+        ctx.fillStyle = "rgba(0, 0, 255, 0.5)"
+        ctx.fillRect(this.attackbox.position.x, this.attackbox.position.y, this.attackbox.width, this.attackbox.height)
     }
 
     drawCharacter()
@@ -210,11 +209,10 @@ class Player {
 
     jump()
     {
-        if(key.w && this.canJump)
+        if(key.w && this.velocity.y == 0)
         { 
             this.velocity.y = this.speed.jump;
             this.isJumping = true;
-            this.canJump = false;
         }
     }
 
@@ -227,17 +225,16 @@ class Player {
                 if(slimeArray.length == 0) return;
                 const slime = slimeArray[i];
                 if (this.attackbox.position.y + this.attackbox.height >= slime.hitbox.position.y * slime.scale.y / scaleCharacter.y &&
-                    this.attackbox.position.y <= slime.hitbox.position.y + slime.hitbox.height * slime.scale.y / scaleCharacter.y &&
-                    this.attackbox.position.x <= slime.hitbox.position.x + slime.hitbox.width * slime.scale.x / scaleCharacter.x &&
+                    this.attackbox.position.y <= (slime.hitbox.position.y + slime.hitbox.height) * slime.scale.y / scaleCharacter.y &&
+                    this.attackbox.position.x <= (slime.hitbox.position.x + slime.hitbox.width) * slime.scale.x / scaleCharacter.x &&
                     this.attackbox.position.x + this.attackbox.width >= slime.hitbox.position.x * slime.scale.x / scaleCharacter.x && 
                     this.isAttacking)
                 {
-                    if ((this.state = "AttackL" && this.animations.AttackL.currentFrame >= 4) || 
-                    (this.state = "AttackR" && this.animations.AttackR.currentFrame >= 4))
+                    if ((this.state == "AttackL" && this.animations.AttackL.currentFrame >= 4) || 
+                    (this.state == "AttackR" && this.animations.AttackR.currentFrame >= 4))
                     {   
                         slime.health -= 20;
                         if(slime.health > 0) slime.state = "Hurt";
-                        console.log(slime.health)
                         this.isAttacking = false;
                     }
                     
@@ -253,8 +250,8 @@ class Player {
             if(slimeArray.length == 0) return;
             const slime = slimeArray[i];
             if (this.attackbox.position.y + this.attackbox.height >= slime.hitbox.position.y * slime.scale.y / scaleCharacter.y &&
-                this.attackbox.position.y <= slime.hitbox.position.y + slime.hitbox.height * slime.scale.y / scaleCharacter.y &&
-                this.attackbox.position.x <= slime.hitbox.position.x + slime.hitbox.width * slime.scale.x / scaleCharacter.x &&
+                this.attackbox.position.y <= (slime.hitbox.position.y + slime.hitbox.height) * slime.scale.y / scaleCharacter.y &&
+                this.attackbox.position.x <= (slime.hitbox.position.x + slime.hitbox.width)* slime.scale.x / scaleCharacter.x &&
                 this.attackbox.position.x + this.attackbox.width >= slime.hitbox.position.x * slime.scale.x / scaleCharacter.x)
             {
                 if (Date.now() - slime.lastAttackTime > 1000)
@@ -290,7 +287,7 @@ class Player {
             else if (this.lastDirection == "left") this.state = "AttackL";
         }
         
-        else if (!this.isJumping)
+        else if (!this.isJumping || this.velocity.y == 0)
         {
             if (this.velocity.x != 0)
             {
@@ -312,7 +309,7 @@ class Player {
             }
         }
 
-        else if (this.isJumping)
+        else if (this.isJumping && this.velocity.y < 0)
         {
             if (this.lastDirection == "right") this.state = "JumpR";
             else if (this.lastDirection == "left") this.state = "JumpL";
@@ -415,7 +412,6 @@ class Player {
                         {
                             this.velocity.y = 0;
                             this.hitbox.position.y = scaledY - this.hitbox.height - 0.01;
-                            this.canJump = true;
                             this.isJumping = false;
                             break;
                         }
@@ -461,7 +457,6 @@ class Player {
     moveCameraLeft()
     {
         if(this.camerabox.translate.x >= 0) return;
-        console.log(this.velocity.x)
         if (this.camerabox.position.x * scale.x <= 0 && key.a && !this.isHorizontallyColliding)
         {
             if (key.shift)

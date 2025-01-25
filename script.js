@@ -164,9 +164,9 @@ const slimeArray = [];
 //    collisionBlocks2d: collisionBlocks2d,
 //    animations: slimeAnimations[1]
 //})];
-
 function animate()
 {
+    console.log(slimeAnimations)
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(background.image, 0, 0, 1400, 800)
     map.update();
@@ -176,20 +176,20 @@ function animate()
     //    collision.draw();
     //}
 
-    if(Math.random() < 0.001 && slimeArray.length < 5)
+    if(Math.random() < 0.002 && slimeArray.length < 10)
     {
         const animationsRandom = Math.floor(Math.random() * 4) + 1;
         slimeArray.push(new Enemy({
             hitbox : {
                 position: {
-                    x: canvas.width + 20,
-                    y: player.hitbox.position.y
+                    x: (canvas.width + 30) / Enemy.scale.x * scaleCharacter.x,
+                    y: player.hitbox.position.y / Enemy.scale.y * scaleCharacter.y
                 },
                 width: 16,
                 height: 11
             },
             collisionBlocks2d,
-            animations: slimeAnimations[animationsRandom]
+            slimeAnimations: slimeAnimations[animationsRandom]
         }))
     }
     

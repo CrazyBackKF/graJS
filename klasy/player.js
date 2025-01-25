@@ -14,8 +14,6 @@ class Player {
         this.lastDirection = "right"
         this.isJumping = false;
         this.isAttacking = false;
-        this.isCollidingLeft = false;
-        this.isCollidingRight = false
         this.canJump = false;
         this.isAttackingState = false;
         this.health = 200;
@@ -92,11 +90,9 @@ class Player {
         player.draw();
         player.drawCharacter();
         ctx.restore();
-        player.fall();
-        player.move();
-        player.checkCollisions();
-        player.jump();
         player.physics();
+        player.move();
+        player.jump();
         player.checkIfHitCanvas();
         
         player.moveCameraRight();
@@ -114,14 +110,14 @@ class Player {
 
     updateCamera()
     {
-        if (this.hitbox.position.x != 0 && this.hitbox.position.x < 682) this.camerabox.position.x += this.velocity.x;
-        this.camerabox.position.y += this.velocity.y;
+        this.camerabox.position.x = this.hitbox.position.x + this.hitbox.width / 2 - this.camerabox.width / 2;
+        this.camerabox.position.y = this.hitbox.position.y + this.hitbox.height / 2 - this.camerabox.height / 2;
     }
     
     draw()
     {
-        //ctx.fillStyle = "rgba(0, 255, 0, 0.5)"
-        //ctx.fillRect(this.camerabox.position.x, this.camerabox.position.y, this.camerabox.width, this.camerabox.height)
+        ctx.fillStyle = "rgba(0, 255, 0, 0.5)"
+        ctx.fillRect(this.camerabox.position.x, this.camerabox.position.y, this.camerabox.width, this.camerabox.height)
         //
         //ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
         //ctx.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height);
@@ -190,21 +186,6 @@ class Player {
         
     }
 
-    fall()
-    {
-        if ((this.hitbox.position.y + this.hitbox.height + this.velocity.y < canvas.height / scale.x)) 
-        {
-            this.velocity.y += this.speed.gravity;
-            this.canJump = false;
-        }
-        else 
-        {
-            this.velocity.y = 0;
-            this.canJump = true;
-        }    
-            
-    }
-
     move()
     {
         if((!key.d && !key.a) || (key.a && key.d)) 
@@ -232,7 +213,6 @@ class Player {
         if(key.w && this.canJump)
         { 
             this.velocity.y = this.speed.jump;
-            this.gravity = 0.05;
             this.isJumping = true;
             this.canJump = false;
         }
@@ -289,8 +269,11 @@ class Player {
 
     physics()
     {
-        this.hitbox.position.y += this.velocity.y;
         this.hitbox.position.x += this.velocity.x;
+        this.checkCollisionsHorizontal();
+        this.velocity.y += this.speed.gravity;
+        this.hitbox.position.y += this.velocity.y;
+        this.checkCollisionsVertical();
     }
 
     checkIfHitCanvas()
@@ -384,7 +367,7 @@ class Player {
         }
     }
 
-    checkCollisions() {
+    checkCollisionsHorizontal() {
         for (let i = 0; i < this.collisionBlocks2d.length; i++) 
         {
             const scaledY = (this.collisionBlocks2d[i].position.y + this.camerabox.translate.y) * 0.75;
@@ -397,52 +380,66 @@ class Player {
                 this.hitbox.position.x + this.velocity.x <= scaledX + scaledWidth &&
                 this.hitbox.position.x + this.hitbox.width + this.velocity.x >= scaledX) 
                 {
-                    if (this.velocity.y > 0 && this.hitbox.position.y + this.hitbox.height <= scaledY) 
-                    {
-                        this.velocity.y = 0;
-                        this.hitbox.position.y = scaledY - this.hitbox.height;
-                        this.canJump = true;
-                        this.isJumping = false;
-                    }
-        
-                    else if (this.velocity.y < 0 && this.hitbox.position.y >= scaledY + scaledHeight) 
-                    {
-                        this.velocity.y = 1;
-                        this.hitbox.position.y = scaledY + scaledHeight;
-                    }
-        
-                    else if (this.velocity.x > 0 && 
-                        this.hitbox.position.x + this.hitbox.width <= scaledX &&
-                        this.hitbox.position.y + this.hitbox.height > scaledY &&
-                        this.hitbox.position.y < scaledY + scaledHeight) 
+                    if (this.velocity.x > 0) 
                     {
                         this.velocity.x = 0;
-                        this.hitbox.position.x = scaledX - this.hitbox.width;
+                        this.hitbox.position.x = scaledX - this.hitbox.width - 0.01;
+                        break;
                     }
         
-                    else if (this.velocity.x < 0 && 
-                        this.hitbox.position.x >= scaledX + scaledWidth &&
-                        this.hitbox.position.y + this.hitbox.height > scaledY &&
-                        this.hitbox.position.y < scaledY + scaledHeight) 
+                    if (this.velocity.x < 0) 
                     {
                         this.velocity.x = 0;
-                        this.hitbox.position.x = scaledX + scaledWidth;
+                        this.hitbox.position.x = scaledX + scaledWidth + 0.01;
+                        break;
                     }
                 }
         }
+    }
+
+    checkCollisionsVertical()
+    {
+        for (let i = 0; i < this.collisionBlocks2d.length; i++) 
+            {
+                const scaledY = (this.collisionBlocks2d[i].position.y + this.camerabox.translate.y) * 0.75;
+                const scaledX = (this.collisionBlocks2d[i].position.x + this.camerabox.translate.x) * 0.75;
+                const scaledWidth = this.collisionBlocks2d[i].width * 0.75;
+                const scaledHeight = this.collisionBlocks2d[i].height * 0.75;
+        
+                if (this.hitbox.position.y + this.hitbox.height + this.velocity.y >= scaledY &&
+                    this.hitbox.position.y + this.velocity.y <= scaledY + scaledHeight &&
+                    this.hitbox.position.x + this.velocity.x <= scaledX + scaledWidth &&
+                    this.hitbox.position.x + this.hitbox.width + this.velocity.x >= scaledX) 
+                    {
+                        if (this.velocity.y > 0) 
+                        {
+                            this.velocity.y = 0;
+                            this.hitbox.position.y = scaledY - this.hitbox.height - 0.01;
+                            this.canJump = true;
+                            this.isJumping = false;
+                            break;
+                        }
+            
+                        if (this.velocity.y < 0) 
+                        {
+                            this.velocity.y = 0;
+                            this.hitbox.position.y = scaledY + scaledHeight + 0.01;
+                            break;
+                        }
+                    }
+            }
     }
 
 
     moveCameraRight()
     {
         if (this.camerabox.translate.x <= -5450) return;
-        if ((this.camerabox.position.x + this.camerabox.width) * scaleCharacter.x >= canvas.width && key.d)
+        if ((this.camerabox.position.x + this.camerabox.width) * scaleCharacter.x >= canvas.width && key.d && !this.isHorizontallyColliding)
         {
             if (key.shift)
             {
                 this.camerabox.translate.x -= (this.velocity.x * this.speed.sprint);
                 this.hitbox.position.x -= (this.velocity.x * this.speed.sprint);
-                this.camerabox.position.x -= (this.velocity.x * this.speed.sprint);
                 for (let i = 0; i < slimeArray.length; i++)
                 {
                     slimeArray[i].hitbox.position.x -= (this.velocity.x * this.speed.sprint) * scale.x / slimeArray[i].scale.x;
@@ -452,7 +449,6 @@ class Player {
             {
                 this.camerabox.translate.x -= this.velocity.x;
                 this.hitbox.position.x -= this.velocity.x;
-                this.camerabox.position.x -= this.velocity.x;
                 for (let i = 0; i < slimeArray.length; i++)
                 {
                     slimeArray[i].hitbox.position.x -= this.velocity.x * scale.x / slimeArray[i].scale.x;
@@ -465,13 +461,13 @@ class Player {
     moveCameraLeft()
     {
         if(this.camerabox.translate.x >= 0) return;
-        if (this.camerabox.position.x * scale.x <= 0 && key.a)
+        console.log(this.velocity.x)
+        if (this.camerabox.position.x * scale.x <= 0 && key.a && !this.isHorizontallyColliding)
         {
             if (key.shift)
             {
                 this.camerabox.translate.x -= (this.velocity.x * this.speed.sprint);
                 this.hitbox.position.x -= (this.velocity.x * this.speed.sprint);
-                this.camerabox.position.x -= (this.velocity.x * this.speed.sprint);
                 for (let i = 0; i < slimeArray.length; i++)
                 {
                     slimeArray[i].hitbox.position.x -= (this.velocity.x * this.speed.sprint) * scale.x / slimeArray[i].scale.x;
@@ -481,7 +477,6 @@ class Player {
             {
                 this.camerabox.translate.x -= this.velocity.x;
                 this.hitbox.position.x -= this.velocity.x;
-                this.camerabox.position.x -= this.velocity.x;
                 for (let i = 0; i < slimeArray.length; i++)
                 {
                     slimeArray[i].hitbox.position.x -= this.velocity.x * scale.x / slimeArray[i].scale.x;
@@ -499,7 +494,6 @@ class Player {
         {
             this.camerabox.translate.y -= this.velocity.y;
             this.hitbox.position.y -= this.velocity.y;
-            this.camerabox.position.y -= this.velocity.y;
             for (let i = 0; i < slimeArray.length; i++)
             {
                 slimeArray[i].hitbox.position.y -= this.velocity.y * scale.y / slimeArray[i].scale.y;
@@ -515,7 +509,6 @@ class Player {
         {
             this.camerabox.translate.y -= this.velocity.y;
             this.hitbox.position.y -= this.velocity.y;
-            this.camerabox.position.y -= this.velocity.y;
             for (let i = 0; i < slimeArray.length; i++)
             {
                 slimeArray[i].hitbox.position.y -= this.velocity.y * scale.y / slimeArray[i].scale.y;

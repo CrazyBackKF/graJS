@@ -316,7 +316,7 @@ class Player {
             }
         }
 
-        else if (this.isJumping && this.velocity.y < 0)
+        else if (this.isJumping && this.velocity.y != 0)
         {
             if (this.lastDirection == "right") this.state = "JumpR";
             else if (this.lastDirection == "left") this.state = "JumpL";

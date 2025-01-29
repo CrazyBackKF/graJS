@@ -57,6 +57,7 @@ map2d.forEach((row, y) => {
 }
 )
 
+
 const player = new Player({
     animations: {
         IdleR: {
@@ -151,19 +152,19 @@ const player = new Player({
     },
     collisionBlocks2d: collisionBlocks2d
 });
-const slimeArray = [];
-//const slimeArray = [new Enemy({
-//    hitbox: {
-//        position: {
-//            x: 200,
-//            y: 100
-//        },
-//        width: 16,
-//        height: 11,
-//    },
-//    collisionBlocks2d: collisionBlocks2d,
-//    animations: slimeAnimations[1]
-//})];
+//const slimeArray = [];
+const slimeArray = [new Enemy({
+    hitbox: {
+        position: {
+            x: 100,
+            y: 50
+        },
+        width: 16,
+        height: 11,
+    },
+    collisionBlocks2d: collisionBlocks2d,
+    slimeAnimations: slimeAnimations[1]
+})];
 function animate()
 {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -175,22 +176,22 @@ function animate()
     //    collision.draw();
     //}
 
-    if(Math.random() < 0.001 && slimeArray.length < 10)
-    {
-        const animationsRandom = Math.floor(Math.random() * 4) + 1;
-        slimeArray.push(new Enemy({
-            hitbox : {
-                position: {
-                    x: (canvas.width + 30) / Enemy.scale.x * scaleCharacter.x,
-                    y: 0
-                },
-                width: 16,
-                height: 11
-            },
-            collisionBlocks2d,
-            slimeAnimations: slimeAnimations[animationsRandom]
-        }))
-    }
+    //if(Math.random() < 0.001 && slimeArray.length < 10)
+    //{
+    //    const animationsRandom = Math.floor(Math.random() * 4) + 1;
+    //    slimeArray.push(new Enemy({
+    //        hitbox : {
+    //            position: {
+    //                x: (canvas.width + 20) / Enemy.scale.x * scaleCharacter.x,
+    //                y: 0
+    //            },
+    //            width: 16,
+    //            height: 11
+    //        },
+    //        collisionBlocks2d,
+    //        slimeAnimations: slimeAnimations[animationsRandom]
+    //    }))
+    //}
     
     player.update();
     for (let i = 0; i < slimeArray.length; i++)

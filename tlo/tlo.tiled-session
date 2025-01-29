@@ -49,11 +49,11 @@
             "scaleInEditor": 1
         },
         "tlo.tmx": {
-            "scale": 0.75,
+            "scale": 0.5,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 5934.666666666666,
-                "y": 194
+                "x": 1500,
+                "y": 757
             }
         }
     },

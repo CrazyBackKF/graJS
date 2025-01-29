@@ -8,7 +8,6 @@ class Enemy
     {
         this.hitbox = hitbox;
         this.collisionBlocks2d = collisionBlocks2d;
-        this.isColliding = false;
         this.attackCooldown = 1000;
         this.lastAttackTime = 0;
 
@@ -37,7 +36,12 @@ class Enemy
         this.fullHealth = 200;
         this.health = 200;
         this.attack = 20;
+        this.canJump = true;
         this.slimeAnimations = slimeAnimations;
+        this.lastDirection;
+        this.canAttack = true;
+        this.isColliding = false;
+        this.hurtAnimation = false;
         this.state = "Move"
         this.image = new Image();
         this.animations = {
@@ -81,11 +85,7 @@ class Enemy
         this.drawImage();
         this.animate();
         ctx.restore();
-        this.fall();
         this.move();
-        this.checkCollisions2();
-        this.checkCollisions();
-        this.jump();
         this.physics();
     }
     
@@ -139,30 +139,113 @@ class Enemy
     physics()
     {
         this.hitbox.position.x += this.velocity.x;
+        this.checkCollisions();
+        this.velocity.y += this.speed.gravity;
         this.hitbox.position.y += this.velocity.y;
+        this.checkCollisions2();
     }
 
-    fall()
+    attackAnimation()
     {
-        this.velocity.y += this.speed.gravity;
+        const self = this;
+        const lastPlayerPosition = player.hitbox.position.x + player.hitbox.width / 2;
+        gsap.to(this.hitbox.position, {
+            x: lastPlayerPosition * scaleCharacter.x / this.scale.x,
+            duration: 1,
+            ease: "power1.out",
+            onUpdate: function() {
+            {
+                for (let i = 0; i < self.collisionBlocks2d.length; i++) 
+                {
+                const scaledY = (self.collisionBlocks2d[i].position.y + player.camerabox.translate.y) * scale.y / self.scale.y;
+                const scaledX = (self.collisionBlocks2d[i].position.x + player.camerabox.translate.x) * scale.x / self.scale.x;
+                const scaledWidth = self.collisionBlocks2d[i].width * scale.x / self.scale.x;
+                const scaledHeight = self.collisionBlocks2d[i].height * scale.y / self.scale.y;
+            
+                    if (self.hitbox.position.y + self.hitbox.height + self.velocity.y >= scaledY &&
+                        self.hitbox.position.y + self.velocity.y <= scaledY + scaledHeight &&
+                        self.hitbox.position.x <= scaledX + scaledWidth &&
+                        self.hitbox.position.x + self.hitbox.width >= scaledX)
+                        {
+                            if ((self.hitbox.position.x - (scaledX + scaledWidth) < 1) || (scaledX - self.hitbox.position.x + self.hitbox.width) < 1)
+                            {
+                                self.canAttack = true;
+                                this.pause();
+                            }
+                        }
+                    }
+                }
+            },
+            onComplete: () =>
+            {
+                self.canAttack = true;
+            }
+        })
     }
 
     move()
     {
+        if (player.isJumping) 
+        {
+            this.velocity.x = 0.00000001
+            return;
+        }
         if (this.health <= 0) 
         {
             this.velocity.x = 0;
             return;
         };
-        if (this.hitbox.position.x * this.scale.x < player.hitbox.position.x * scaleCharacter.x)
+        const attackCondition = Math.abs(((this.hitbox.position.x - this.hitbox.width / 2) * this.scale.x) - ((player.hitbox.position.x - player.hitbox.width / 2) * scaleCharacter.x))
+        const attackCondition2 = (Math.floor((this.hitbox.position.y + this.hitbox.height) * this.scale.y) == Math.floor((player.hitbox.position.y + player.hitbox.height) * scaleCharacter.y))
+        if (attackCondition <= 300 && attackCondition >= 100 && this.canAttack &&  attackCondition2 && !this.hurtAnimation)
         {
-            this.velocity.x = this.speed.right;
-            //this.state = "Move";
+            this.canAttack = false;
+            const self = this;
+            gsap.to(this.hitbox.position, {
+                x: this.hitbox.position.x - 5,
+                onUpdate: function() {
+                    {
+                        for (let i = 0; i < self.collisionBlocks2d.length; i++) 
+                        {
+                        const scaledY = (self.collisionBlocks2d[i].position.y + player.camerabox.translate.y) * scale.y / self.scale.y;
+                        const scaledX = (self.collisionBlocks2d[i].position.x + player.camerabox.translate.x) * scale.x / self.scale.x;
+                        const scaledWidth = self.collisionBlocks2d[i].width * scale.x / self.scale.x;
+                        const scaledHeight = self.collisionBlocks2d[i].height * scale.y / self.scale.y;
+                    
+                            if (self.hitbox.position.y + self.hitbox.height + self.velocity.y >= scaledY &&
+                                self.hitbox.position.y + self.velocity.y <= scaledY + scaledHeight &&
+                                self.hitbox.position.x <= scaledX + scaledWidth &&
+                                self.hitbox.position.x + self.hitbox.width >= scaledX)
+                                {
+                                    if ((self.hitbox.position.x - (scaledX + scaledWidth) < 1) || (scaledX - self.hitbox.position.x + self.hitbox.width) < 1)
+                                    {
+                                        self.canAttack = true;
+                                        this.pause();
+                                        self.attackAnimation();
+                                    }
+                                }
+                            }
+                        }
+                    },
+                onComplete: () => {
+                    self.attackAnimation();
+                }
+            })    
+              
         }
-        else if(this.hitbox.position.x * this.scale.x > player.hitbox.position.x * scaleCharacter.x)
+        if (Math.ceil(this.hitbox.position.x + this.hitbox.width / 2) * this.scale.x == Math.ceil(player.hitbox.position.x + player.hitbox.width / 2) * scaleCharacter.x)
         {
+            this.velocity.x = 0;
+        }
+        if (Math.ceil(this.hitbox.position.x + this.hitbox.width / 2) * this.scale.x < Math.ceil(player.hitbox.position.x + player.hitbox.width / 2) * scaleCharacter.x)
+        {
+            this.lastDirection = "right";
+            this.velocity.x = this.speed.right;
+        }
+        else if(Math.ceil(this.hitbox.position.x + this.hitbox.width / 2) * this.scale.x > Math.ceil(player.hitbox.position.x + player.hitbox.width / 2) * scaleCharacter.x)
+        {
+            this.lastDirection = "left";
             this.velocity.x = this.speed.left;
-            //this.state = "Move";
         }
     }
 
@@ -174,69 +257,67 @@ class Enemy
 
     checkCollisions() 
     {
-        this.isColliding = false;
-        for (let i = 0; i < this.collisionBlocks2d.length; i++)
+        for (let i = 0; i < this.collisionBlocks2d.length; i++) 
         {
-            const scaledY = (this.collisionBlocks2d[i].position.y + player.camerabox.translate.y) * scale.y / this.scale.y;
-            const scaledX = (this.collisionBlocks2d[i].position.x + player.camerabox.translate.x) * scale.x / this.scale.x;
-            const scaledWidth = this.collisionBlocks2d[i].width * scale.x / this.scale.x;
-            const scaledHeight = this.collisionBlocks2d[i].height * scale.y / this.scale.y;
-
+           const scaledY = (this.collisionBlocks2d[i].position.y + player.camerabox.translate.y) * scale.y / this.scale.y;
+           const scaledX = (this.collisionBlocks2d[i].position.x + player.camerabox.translate.x) * scale.x / this.scale.x;
+           const scaledWidth = this.collisionBlocks2d[i].width * scale.x / this.scale.x;
+           const scaledHeight = this.collisionBlocks2d[i].height * scale.y / this.scale.y;
+    
             if (this.hitbox.position.y + this.hitbox.height + this.velocity.y >= scaledY &&
                 this.hitbox.position.y + this.velocity.y <= scaledY + scaledHeight &&
                 this.hitbox.position.x + this.velocity.x <= scaledX + scaledWidth &&
-                this.hitbox.position.x + this.hitbox.width + this.velocity.x >= scaledX)
-            {
-
-                if (this.velocity.x > 0)
+                this.hitbox.position.x + this.hitbox.width + this.velocity.x >= scaledX) 
                 {
-                    this.velocity.x = 0;
-                    this.isColliding = true;
-                    break;
+                    if (this.velocity.x > 0) 
+                    {
+                        this.velocity.x = 0;
+                        this.jump();
+                        this.hitbox.position.x = scaledX - this.hitbox.width - 0.01;
+                        break;
+                    }
+        
+                    if (this.velocity.x < 0) 
+                    {
+                        this.velocity.x = 0;
+                        this.jump();
+                        this.hitbox.position.x = scaledX + scaledWidth + 0.01;
+                        break;
+                    }
                 }
-
-                if (this.velocity.x < 0)
-                {
-                    this.velocity.x = 0;
-                    this.isColliding = true;
-                    break;
-                }
-
-            }
-
         }
     }
 
     checkCollisions2()
     {
-        this.isColliding = false;
-        for (let i = 0; i < this.collisionBlocks2d.length; i++)
-            {
-                const scaledY = (this.collisionBlocks2d[i].position.y + player.camerabox.translate.y) * scale.y / this.scale.y;
-                const scaledX = (this.collisionBlocks2d[i].position.x + player.camerabox.translate.x) * scale.x / this.scale.x;
-                const scaledWidth = this.collisionBlocks2d[i].width * scale.x / this.scale.x;
-                const scaledHeight = this.collisionBlocks2d[i].height * scale.y / this.scale.y;
+        for (let i = 0; i < this.collisionBlocks2d.length; i++) 
+        {
+            const scaledY = (this.collisionBlocks2d[i].position.y + player.camerabox.translate.y) * scale.y / this.scale.y;
+            const scaledX = (this.collisionBlocks2d[i].position.x + player.camerabox.translate.x) * scale.x / this.scale.x;
+            const scaledWidth = this.collisionBlocks2d[i].width * scale.x / this.scale.x;
+            const scaledHeight = this.collisionBlocks2d[i].height * scale.y / this.scale.y;
     
-                if (this.hitbox.position.y + this.hitbox.height + this.velocity.y >= scaledY &&
-                    this.hitbox.position.y + this.velocity.y <= scaledY + scaledHeight &&
-                    this.hitbox.position.x + this.velocity.x <= scaledX + scaledWidth &&
-                    this.hitbox.position.x + this.hitbox.width + this.velocity.x >= scaledX)
+            
+            if (this.hitbox.position.y + this.hitbox.height + this.velocity.y >= scaledY &&
+                this.hitbox.position.y + this.velocity.y <= scaledY + scaledHeight &&
+                this.hitbox.position.x + this.velocity.x <= scaledX + scaledWidth &&
+                this.hitbox.position.x + this.hitbox.width + this.velocity.x >= scaledX) 
                 {
-
-                    if (this.velocity.y < 0)
-                    {
-                        this.velocity.y = 1;
-                        break;
-                    }
-                    
-                    if (this.velocity.y > 0)
+                    if (this.velocity.y > 0) 
                     {
                         this.velocity.y = 0;
+                        this.hitbox.position.y = scaledY - this.hitbox.height - 0.01;
                         break;
                     }
-    
+                    else this.isColliding = false;
+        
+                    if (this.velocity.y < 0) 
+                    {
+                        this.velocity.y = 1;
+                        this.hitbox.position.y = scaledY + scaledHeight + 0.01;
+                        break;
+                    }
                 }
-    
-            }
+        }
     }
 }

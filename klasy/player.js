@@ -58,6 +58,11 @@ class Player {
             sprint: 1.3
         }
 
+        this.lastPosition = {
+            x: this.hitbox.position.x,
+            y: this.hitbox.position.y
+        }
+
         this.attackbox = {
             position: {
                 x: 0,
@@ -94,11 +99,11 @@ class Player {
         player.move();
         player.jump();
         player.checkIfHitCanvas();
-        
         player.moveCameraRight();
         player.moveCameraLeft();
         player.moveCameraDown();
         player.moveCameraUp();
+        this.lastPosition.x = this.hitbox.position.x;
     }
 
     updateAttackBox()
@@ -122,8 +127,8 @@ class Player {
         //ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
         //ctx.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height);
 
-        ctx.fillStyle = "rgba(0, 0, 255, 0.5)"
-        ctx.fillRect(this.attackbox.position.x, this.attackbox.position.y, this.attackbox.width, this.attackbox.height)
+        //ctx.fillStyle = "rgba(0, 0, 255, 0.5)"
+        //ctx.fillRect(this.attackbox.position.x, this.attackbox.position.y, this.attackbox.width, this.attackbox.height)
     }
 
     drawCharacter()
@@ -234,13 +239,43 @@ class Player {
                     if ((this.state == "AttackL" && this.animations.AttackL.currentFrame >= 4) || 
                     (this.state == "AttackR" && this.animations.AttackR.currentFrame >= 4))
                     {   
+                        slime.hurtAnimation = true;
+                        var animationAcceleration;
                         slime.health -= 20;
                         if(slime.health > 0) slime.state = "Hurt";
-                        if((slime.hitbox.position.x + slime.hitbox.width / 2) * slime.scale.x >= (this.hitbox.position.x + this.hitbox.width / 2) * scaleCharacter.x) var animationAcceleration = 50;
-                        else var animationAcceleration = -50;
+                        if(this.lastDirection == "right") animationAcceleration = 50;
+                        else animationAcceleration = -50;
                         gsap.to(slime.hitbox.position, {
                             x: slime.hitbox.position.x + animationAcceleration,
-                        })
+                            onUpdate: function () {
+                                for (let i = 0; i < slime.collisionBlocks2d.length; i++) {
+                                    const scaledY = (slime.collisionBlocks2d[i].position.y + player.camerabox.translate.y) * scale.y / slime.scale.y;
+                                    const scaledX = (slime.collisionBlocks2d[i].position.x + player.camerabox.translate.x) * scale.x / slime.scale.x;
+                                    const scaledWidth = slime.collisionBlocks2d[i].width * scale.x / slime.scale.x;
+                                    const scaledHeight = slime.collisionBlocks2d[i].height * scale.y / slime.scale.y;
+                        
+                                    if (slime.hitbox.position.y + slime.hitbox.height + slime.velocity.y >= scaledY &&
+                                        slime.hitbox.position.y + slime.velocity.y <= scaledY + scaledHeight &&
+                                        slime.hitbox.position.x <= scaledX + scaledWidth &&
+                                        slime.hitbox.position.x + slime.hitbox.width >= scaledX) {
+                                        
+                                        if ((slime.hitbox.position.x - (scaledX + scaledWidth) < 1) || 
+                                            (scaledX - slime.hitbox.position.x + slime.hitbox.width) < 1) {
+                        
+                                            this.pause();
+                        
+                                            if (animationAcceleration > 0) {
+                                                slime.hitbox.position.x = scaledX - slime.hitbox.width;
+                                            } else {
+                                                slime.hitbox.position.x = scaledX + scaledWidth;
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            onComplete: () => slime.hurtAnimation = false
+                        });
+                        
                         this.isAttacking = false;
                         this.lastAttack = Date.now();
                     }
@@ -265,10 +300,21 @@ class Player {
                 {
                     this.health -= slime.attack; 
                     slime.lastAttackTime = Date.now();
+                    this.hurtAnimation(slime);
                 }
                 
             }
         }
+    }
+
+    hurtAnimation(slime)
+    {
+        const attackAnimation = slime.lastDirection == "right" ? 100 : -100;
+        if (this.hitbox.position.x + attackAnimation <= 0 || this.hitbox.position.x + attackAnimation >= canvas.width * scaleCharacter.x) return;
+
+            gsap.to(this.camerabox.translate, {
+                x: this.camerabox.translate.x - attackAnimation,
+            })
     }
 
     physics()
@@ -437,53 +483,31 @@ class Player {
     moveCameraRight()
     {
         if (this.camerabox.translate.x <= -5450) return;
+        const roznica = this.hitbox.position.x - this.lastPosition.x
         if ((this.camerabox.position.x + this.camerabox.width) * scaleCharacter.x >= canvas.width && key.d && !this.isHorizontallyColliding)
         {
-            if (key.shift)
-            {
-                this.camerabox.translate.x -= (this.velocity.x * this.speed.sprint);
-                this.hitbox.position.x -= (this.velocity.x * this.speed.sprint);
+                this.camerabox.translate.x -= roznica
+                this.hitbox.position.x -= roznica
                 for (let i = 0; i < slimeArray.length; i++)
                 {
-                    slimeArray[i].hitbox.position.x -= (this.velocity.x * this.speed.sprint) * scale.x / slimeArray[i].scale.x;
+                    slimeArray[i].hitbox.position.x -= (roznica * scale.x / slimeArray[i].scale.x);
                 }
-            }
-            else 
-            {
-                this.camerabox.translate.x -= this.velocity.x;
-                this.hitbox.position.x -= this.velocity.x;
-                for (let i = 0; i < slimeArray.length; i++)
-                {
-                    slimeArray[i].hitbox.position.x -= this.velocity.x * scale.x / slimeArray[i].scale.x;
-                }
-            }    
-            
         }
     }
 
     moveCameraLeft()
     {
-        if(this.camerabox.translate.x >= 0) return;
+        if(this.camerabox.translate.x - this.velocity.x > 0) return;
+        const roznica = this.hitbox.position.x - this.lastPosition.x
         if (this.camerabox.position.x * scale.x <= 0 && key.a && !this.isHorizontallyColliding)
         {
-            if (key.shift)
+
+            this.camerabox.translate.x -= roznica
+            this.hitbox.position.x -= roznica
+            for (let i = 0; i < slimeArray.length; i++)
             {
-                this.camerabox.translate.x -= (this.velocity.x * this.speed.sprint);
-                this.hitbox.position.x -= (this.velocity.x * this.speed.sprint);
-                for (let i = 0; i < slimeArray.length; i++)
-                {
-                    slimeArray[i].hitbox.position.x -= (this.velocity.x * this.speed.sprint) * scale.x / slimeArray[i].scale.x;
-                }
+                slimeArray[i].hitbox.position.x -= (roznica * scale.x / slimeArray[i].scale.x);
             }
-            else 
-            {
-                this.camerabox.translate.x -= this.velocity.x;
-                this.hitbox.position.x -= this.velocity.x;
-                for (let i = 0; i < slimeArray.length; i++)
-                {
-                    slimeArray[i].hitbox.position.x -= this.velocity.x * scale.x / slimeArray[i].scale.x;
-                }
-            }    
             
         }
     }

@@ -15,7 +15,6 @@ class Player {
         this.isJumping = false;
         this.isAttacking = false;
         this.isAttackingState = false;
-        this.isHurt = false;
         this.health = 200;
         this.lastAttack = 0;
         
@@ -75,6 +74,7 @@ class Player {
         }
 
         this.image = new Image();
+        this.isDead = false;
         
         this.state = "IdleR";
         
@@ -85,25 +85,28 @@ class Player {
 
     update()
     {
-        player.updateAttackBox();
-        player.attack();
-        player.hurt();
-        player.updateCamera();
-        player.checkState();
-        player.changeState();
+        if(this.health <= 0) this.isDead = true;
+        if(this.isDead) return;
+        this.updateAttackBox();
+        this.attack();
+        this.hurt();
+        this.updateCamera();
+        this.checkState();
+        this.changeState();
         ctx.save();
         ctx.scale(scaleCharacter.x, scaleCharacter.y);
-        player.draw();
-        player.drawCharacter();
+        this.draw();
+        this.drawCharacter();
         ctx.restore();
-        player.physics();
-        player.move();
-        player.jump();
-        player.checkIfHitCanvas();
-        player.moveCameraRight();
-        player.moveCameraLeft();
-        player.moveCameraDown();
-        player.moveCameraUp();
+        this.physics();
+        this.move();
+        this.jump();
+        this.checkIfHitCanvas();
+        
+        this.moveCameraRight();
+        this.moveCameraLeft();
+        this.moveCameraDown();
+        this.moveCameraUp();
         this.lastPosition.x = this.hitbox.position.x;
     }
 
@@ -179,17 +182,14 @@ class Player {
     if (this.animations[this.state].framesCounter % this.animations[this.state].frameBuffer == 0)
     {
         if(this.animations[this.state].currentFrame < this.animations[this.state].allFrames - 1) this.animations[this.state].currentFrame++;
-        else if (!(this.animations[this.state].isRepetitive) || ((this.state == "HurtL" || this.state == "HurtR") && this.animations[this.state].reapeated == 5))
+        else if (!(this.animations[this.state].isRepetitive))
         {
             this.animations[this.state].currentFrame = 0;
             if (this.lastDirection == "right") this.state = "IdleR";
             if (this.lastDirection == "left") this.state = "IdleL";
             this.isAttackingState = false;
-            this.isHurt = false;
         }
         else this.animations[this.state].currentFrame = 0;
-        if(this.state == "HurtL" || this.state == "HurtR") {this.animations[this.state].reapeated++;
-        console.log(this.animations[this.state].reapeated++)}
     } 
     this.animations[this.state].framesCounter++;
         
@@ -245,11 +245,11 @@ class Player {
                     {   
                         slime.hurtAnimation = true;
                         var animationAcceleration;
+                        slime.velocity.y = -1.2
                         slime.health -= 20;
                         if(slime.health > 0) slime.state = "Hurt";
                         if(this.lastDirection == "right") animationAcceleration = 50;
                         else animationAcceleration = -50;
-                        slime.velocity.y = -1.2;
                         gsap.to(slime.hitbox.position, {
                             x: slime.hitbox.position.x + animationAcceleration,
                             onUpdate: function () {
@@ -305,13 +305,11 @@ class Player {
                 {
                     this.health -= slime.attack; 
                     slime.lastAttackTime = Date.now();
-                    this.isHurt = true;
                 }
                 
             }
         }
     }
-
 
     physics()
     {
@@ -330,14 +328,7 @@ class Player {
 
     checkState()
     {
-        console.log(this.state)
-        if (this.isHurt)
-        {
-            if (this.lastDirection == "right") this.state = "HurtR";
-            else if (this.lastDirection == "left") this.state = "HurtL";
-        }
-        
-        else if (this.isAttackingState)
+        if (this.isAttackingState)
         {
             if (this.lastDirection == "right") this.state = "AttackR";
             else if (this.lastDirection == "left") this.state = "AttackL";
@@ -417,12 +408,6 @@ class Player {
             case "WalkL":
                 this.image.src = this.animations.WalkL.imageSrc;
                 break;
-            case "HurtR": 
-                this.image.src = this.animations.HurtR.imageSrc;
-                break;
-            case "HurtL": 
-                this.image.src = this.animations.HurtL.imageSrc;
-                break;
         }
     }
 
@@ -499,7 +484,7 @@ class Player {
                 this.hitbox.position.x -= roznica
                 for (let i = 0; i < slimeArray.length; i++)
                 {
-                    slimeArray[i].hitbox.position.x -= (roznica * scale.x / slimeArray[i].scale.x);
+                    slimeArray[i].hitbox.position.x -= roznica * scale.x / slimeArray[i].scale.x;
                 }
         }
     }
@@ -515,7 +500,7 @@ class Player {
             this.hitbox.position.x -= roznica
             for (let i = 0; i < slimeArray.length; i++)
             {
-                slimeArray[i].hitbox.position.x -= (roznica * scale.x / slimeArray[i].scale.x);
+                slimeArray[i].hitbox.position.x -= roznica * scale.x / slimeArray[i].scale.x;
             }
             
         }

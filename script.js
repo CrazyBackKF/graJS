@@ -181,57 +181,78 @@ const player = new Player({
     },
     collisionBlocks2d: collisionBlocks2d
 });
-//const slimeArray = [];
-const slimeArray = [new Enemy({
-    hitbox: {
-        position: {
-            x: 100,
-            y: 50
-        },
-        width: 16,
-        height: 11,
-    },
-    collisionBlocks2d: collisionBlocks2d,
-    slimeAnimations: slimeAnimations[1]
-})];
+const slimeArray = [];
+//const slimeArray = [new Enemy({
+//    hitbox: {
+//        position: {
+//            x: 100,
+//            y: 50
+//        },
+//        width: 16,
+//        height: 11,
+//    },
+//    collisionBlocks2d: collisionBlocks2d,
+//    slimeAnimations: slimeAnimations[1]
+//})];
+
 function animate()
 {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(background.image, 0, 0, 1400, 800)
-    map.update();
-
-    //for (collision of collisionBlocks2d)
-    //{
-    //    collision.draw();
-    //}
-
-    //if(Math.random() < 0.001 && slimeArray.length < 10)
-    //{
-    //    const animationsRandom = Math.floor(Math.random() * 4) + 1;
-    //    slimeArray.push(new Enemy({
-    //        hitbox : {
-    //            position: {
-    //                x: (canvas.width + 20) / Enemy.scale.x * scaleCharacter.x,
-    //                y: 0
-    //            },
-    //            width: 16,
-    //            height: 11
-    //        },
-    //        collisionBlocks2d,
-    //        slimeAnimations: slimeAnimations[animationsRandom]
-    //    }))
-    //}
-    
-    player.update();
-    for (let i = 0; i < slimeArray.length; i++)
+    if (player.isDead)
     {
-        slimeArray[i].update();
-        if(slimeArray[i].health <= 0)
-        {
-            slimeArray[i].state = "Death"
-            if (slimeArray[i].animations.Death.currentFrame == slimeArray[i].animations.Death.allFrames - 1) slimeArray.splice(i, 1);
-        }
+        ctx.fillStyle = "red";
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+            ctx.font = '200px "Jersey 15"';
+            ctx.fillStyle = 'black';
+            ctx.textAlign = 'center';  
+            ctx.textBaseline = 'middle';  
+
+            ctx.fillText('Zginąłeś!', canvas.width / 2, canvas.height / 2);
     }
+    if (!player.isDead)  
+    {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(background.image, 0, 0, 1400, 800)
+        map.update();
+
+        //for (collision of collisionBlocks2d)
+        //{
+        //    collision.draw();
+        //}
+
+        if(Math.random() < 0.001 && slimeArray.length < 10)
+        {
+            const animationsRandom = Math.floor(Math.random() * 4) + 1;
+            slimeArray.push(new Enemy({
+                hitbox : {
+                    position: {
+                        x: (canvas.width + 20) / Enemy.scale.x * scaleCharacter.x,
+                        y: 0
+                    },
+                    width: 16,
+                    height: 11
+                },
+                collisionBlocks2d,
+                slimeAnimations: slimeAnimations[animationsRandom]
+            }))
+        }
+        
+        player.update();
+        for (let i = 0; i < slimeArray.length; i++)
+        {
+            slimeArray[i].update();
+            if(slimeArray[i].health <= 0)
+            {
+                slimeArray[i].state = "Death"
+                if (slimeArray[i].animations.Death.currentFrame == slimeArray[i].animations.Death.allFrames - 1) slimeArray.splice(i, 1);
+            }
+        }
+        ctx.fillStyle = "rgba(0, 0, 0)"
+        ctx.fillRect(10, 10, 600, 70)
+        ctx.fillStyle = "rgba(255, 0, 0)"
+        ctx.fillRect(15, 15, 590 * (player.health / 200), 60)
+        console.log(player.health)
+    }  
+        
     requestAnimationFrame(animate);
 }
 

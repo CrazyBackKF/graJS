@@ -312,8 +312,13 @@ class Player {
         const attackAnimation = slime.lastDirection == "right" ? 100 : -100;
         if (this.hitbox.position.x + attackAnimation <= 0 || this.hitbox.position.x + attackAnimation >= canvas.width * scaleCharacter.x) return;
 
-            gsap.to(this.camerabox.translate, {
-                x: this.camerabox.translate.x - attackAnimation,
+            gsap.to(this.hitbox.position, {
+                x: this.hitbox.position.x + attackAnimation,
+                onUpdate: () => {
+                    this.moveCameraRight();
+                    this.moveCameraLeft();
+                    this.lastPosition.x = this.hitbox.position.x;
+                }
             })
     }
 

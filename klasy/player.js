@@ -15,6 +15,7 @@ class Player {
         this.isJumping = false;
         this.isAttacking = false;
         this.isAttackingState = false;
+        this.isHurt = false;
         this.health = 200;
         this.lastAttack = 0;
         
@@ -178,14 +179,17 @@ class Player {
     if (this.animations[this.state].framesCounter % this.animations[this.state].frameBuffer == 0)
     {
         if(this.animations[this.state].currentFrame < this.animations[this.state].allFrames - 1) this.animations[this.state].currentFrame++;
-        else if (!(this.animations[this.state].isRepetitive))
+        else if (!(this.animations[this.state].isRepetitive) || ((this.state == "HurtL" || this.state == "HurtR") && this.animations[this.state].reapeated == 5))
         {
             this.animations[this.state].currentFrame = 0;
             if (this.lastDirection == "right") this.state = "IdleR";
             if (this.lastDirection == "left") this.state = "IdleL";
             this.isAttackingState = false;
+            this.isHurt = false;
         }
         else this.animations[this.state].currentFrame = 0;
+        if(this.state == "HurtL" || this.state == "HurtR") {this.animations[this.state].reapeated++;
+        console.log(this.animations[this.state].reapeated++)}
     } 
     this.animations[this.state].framesCounter++;
         
@@ -245,6 +249,7 @@ class Player {
                         if(slime.health > 0) slime.state = "Hurt";
                         if(this.lastDirection == "right") animationAcceleration = 50;
                         else animationAcceleration = -50;
+                        slime.velocity.y = -1.2;
                         gsap.to(slime.hitbox.position, {
                             x: slime.hitbox.position.x + animationAcceleration,
                             onUpdate: function () {
@@ -300,27 +305,13 @@ class Player {
                 {
                     this.health -= slime.attack; 
                     slime.lastAttackTime = Date.now();
-                    this.hurtAnimation(slime);
+                    this.isHurt = true;
                 }
                 
             }
         }
     }
 
-    hurtAnimation(slime)
-    {
-        const attackAnimation = slime.lastDirection == "right" ? 100 : -100;
-        if (this.hitbox.position.x + attackAnimation <= 0 || this.hitbox.position.x + attackAnimation >= canvas.width * scaleCharacter.x) return;
-
-            gsap.to(this.hitbox.position, {
-                x: this.hitbox.position.x + attackAnimation,
-                onUpdate: () => {
-                    this.moveCameraRight();
-                    this.moveCameraLeft();
-                    this.lastPosition.x = this.hitbox.position.x;
-                }
-            })
-    }
 
     physics()
     {
@@ -339,7 +330,14 @@ class Player {
 
     checkState()
     {
-        if (this.isAttackingState)
+        console.log(this.state)
+        if (this.isHurt)
+        {
+            if (this.lastDirection == "right") this.state = "HurtR";
+            else if (this.lastDirection == "left") this.state = "HurtL";
+        }
+        
+        else if (this.isAttackingState)
         {
             if (this.lastDirection == "right") this.state = "AttackR";
             else if (this.lastDirection == "left") this.state = "AttackL";
@@ -418,6 +416,12 @@ class Player {
             
             case "WalkL":
                 this.image.src = this.animations.WalkL.imageSrc;
+                break;
+            case "HurtR": 
+                this.image.src = this.animations.HurtR.imageSrc;
+                break;
+            case "HurtL": 
+                this.image.src = this.animations.HurtL.imageSrc;
                 break;
         }
     }

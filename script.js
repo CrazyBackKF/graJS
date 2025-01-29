@@ -64,90 +64,119 @@ const player = new Player({
             imageSrc: "sprite/IdleR.png",
             currentFrame: 0,
             frameBuffer: 15,
-            framesCounter: 0,
+            framesCounter: 1,
             allFrames: 4,
-            isRepetitive: true
+            isRepetitive: true,
+            repeated: 0
         },
 
         IdleL: {
             imageSrc: "sprite/IdleL.png",
             currentFrame: 0,
             frameBuffer: 15,
-            framesCounter: 0,
+            framesCounter: 1,
             allFrames: 4,
-            isRepetitive: true
+            isRepetitive: true,
+            repeated: 0
         },
 
         JumpL: {
             imageSrc: "sprite/JumpL.png",
             currentFrame: 0,
             frameBuffer: 15,
-            framesCounter: 0,
+            framesCounter: 1,
             allFrames: 4,
-            isRepetitive: true
+            isRepetitive: true,
+            repeated: 0
         },
 
         JumpR: {
             imageSrc: "sprite/JumpR.png",
             currentFrame: 0,
             frameBuffer: 15,
-            framesCounter: 0,
+            framesCounter: 1,
             allFrames: 4,
-            isRepetitive: true
+            isRepetitive: true,
+            repeated: 0
         },
 
         RunL: {
             imageSrc: "sprite/RunL.png",
             currentFrame: 0,
             frameBuffer: 15,
-            framesCounter: 0,
+            framesCounter: 1,
             allFrames: 6,
-            isRepetitive: true
+            isRepetitive: true,
+            repeated: 0
         },
 
         RunR: {
             imageSrc: "sprite/RunR.png",
             currentFrame: 0,
             frameBuffer: 15,
-            framesCounter: 0,
+            framesCounter: 1,
             allFrames: 6,
-            isRepetitive: true
+            isRepetitive: true,
+            repeated: 0
         },
 
         WalkL: {
             imageSrc: "sprite/WalkL.png",
             currentFrame: 0,
             frameBuffer: 15,
-            framesCounter: 0,
+            framesCounter: 1,
             allFrames: 6,
-            isRepetitive: true
+            isRepetitive: true,
+            repeated: 0
         },
 
         WalkR: {
             imageSrc: "sprite/WalkR.png",
             currentFrame: 0,
             frameBuffer: 15,
-            framesCounter: 0,
+            framesCounter: 1,
             allFrames: 6,
-            isRepetitive: true
+            isRepetitive: true,
+            repeated: 0
         },
 
         AttackL: {
             imageSrc: "sprite/AttackL.png",
             currentFrame: 0,
             frameBuffer: 15,
-            framesCounter: 0,
+            framesCounter: 1,
             allFrames: 6,
-            isRepetitive: false
+            isRepetitive: false,
+            repeated: 0
         },
 
         AttackR: {
             imageSrc: "sprite/AttackR.png",
             currentFrame: 0,
             frameBuffer: 15,
-            framesCounter: 0,
+            framesCounter: 1,
             allFrames: 6,
-            isRepetitive: false
+            isRepetitive: false,
+            repeated: 0
+        },
+        HurtL: {
+            imageSrc: "sprite/HurtL.png",
+            currentFrame: 0,
+            frameBuffer: 20,
+            framesCounter: 1,
+            allFrames: 2,
+            isRepetitive: false,
+            reapeated: 0
+        },
+
+        HurtR: {
+            imageSrc: "sprite/HurtR.png",
+            currentFrame: 0,
+            frameBuffer: 20,
+            framesCounter: 1,
+            allFrames: 2,
+            isRepetitive: false,
+            reapeated: 0
         }
     },
     collisionBlocks2d: collisionBlocks2d

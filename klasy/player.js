@@ -206,13 +206,13 @@ class Player {
         {
             if(key.shift) this.velocity.x = this.speed.right * this.speed.sprint;
             else this.velocity.x = this.speed.right;
-            player.lastDirection = "right";
+            this.lastDirection = "right";
         }
         else if(key.a) 
         {    
             if(key.shift) this.velocity.x = this.speed.left * this.speed.sprint;
             else this.velocity.x = this.speed.left;
-            player.lastDirection = "left";
+            this.lastDirection = "left";
         }
         else return;
     }
